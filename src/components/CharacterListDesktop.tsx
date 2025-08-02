@@ -1,4 +1,6 @@
 import React from "react";
+import { useQuery } from '@apollo/client';
+import { GET_CHARACTERS } from '../services/queries';
 import SearchAndFilter from "./SearchAndFilter";
 import { HeartIcon } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
@@ -6,29 +8,62 @@ import { getStatusColor } from "../utils/helpers";
 import Comments from "./Comments";
 import { ICharacter } from "../types/character";
 import Character from "./Character";
+import { useStore } from "../store/useStore";
+import { filterCharacters, sortCharacters } from "../utils/helpers";
 
 const CharacterListDesktop: React.FC<{
-  handleFilterChange: (newFilters: any) => void,
-  handleSortChange: (newSortBy: string, newSortOrder: 'asc' | 'desc') => void,
-  sortedCharacters: ICharacter[],
-  starredCharacters: ICharacter[],
-  selectedCharacter: ICharacter | null,
-  regularCharacters: ICharacter[],
-  handleCharacterClick: (character: any) => void,
-  toggleFavorite: (character: any) => void,
-  isFavorite: (characterId: string) => boolean,
-  loading: boolean
-}> = ({
-  handleFilterChange,
-  handleSortChange,
-  sortedCharacters,
-  starredCharacters,
-  selectedCharacter,
-  regularCharacters,
-  handleCharacterClick,
-  toggleFavorite,
-  isFavorite,
-  loading }) => {
+}> = () => {
+  const { 
+    favorites, 
+    toggleFavorite, 
+    isFavorite, 
+    filters, 
+    setFilters, 
+    sortBy, 
+    sortOrder, 
+    setSort, 
+    selectedCharacter, 
+    setSelectedCharacter,
+    currentPage,
+    setCurrentPage
+  } = useStore();
+
+  // GraphQL query for characters
+  const { loading, error, data, fetchMore } = useQuery(GET_CHARACTERS, {
+    variables: {
+      page: currentPage,
+      filter: {
+        name: filters.name || undefined,
+        status: filters.status || undefined,
+        species: filters.species || undefined,
+        gender: filters.gender || undefined,
+      },
+    },
+    notifyOnNetworkStatusChange: true,
+  });
+
+  // Combine API characters with favorites
+  const allCharacters = data?.characters?.results || [];
+  const combinedCharacters = [...allCharacters, ...favorites.filter(fav =>
+    !allCharacters.some((char: ICharacter) => char.id === fav.id)
+  )];
+
+  // Apply client-side filtering and sorting
+  const filteredCharacters = filterCharacters(combinedCharacters, filters);
+  const sortedCharacters = sortCharacters(filteredCharacters, sortBy, sortOrder);
+
+  // Separate starred and regular characters
+  const starredCharacters = sortedCharacters.filter(char => isFavorite(char.id));
+  const regularCharacters = sortedCharacters.filter(char => !isFavorite(char.id));
+
+  const handleFilterChange = (newFilters: any) => {
+    setFilters(newFilters);
+    setCurrentPage(1);
+  };
+
+  const handleSortChange = (newSortBy: string, newSortOrder: 'asc' | 'desc') => {
+    setSort(newSortBy, newSortOrder);
+  };
 
     return (
       <div className="hidden lg:block">
@@ -63,9 +98,6 @@ const CharacterListDesktop: React.FC<{
                       <Character
                         key={character.id}
                         character={character}
-                        handleCharacterClick={handleCharacterClick}
-                        toggleFavorite={toggleFavorite}
-                        selectedCharacter={selectedCharacter}
                         isFavorite
                       />
                     ))}
@@ -83,9 +115,6 @@ const CharacterListDesktop: React.FC<{
                     <Character
                       key={character.id}
                       character={character}
-                      handleCharacterClick={handleCharacterClick}
-                      toggleFavorite={toggleFavorite}
-                      selectedCharacter={selectedCharacter}
                     />
                   ))}
                 </div>

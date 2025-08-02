@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useComments } from '../hooks/useComments';
+import React from 'react';
+import { useStore } from '../store/useStore';
 import { TrashIcon } from '@heroicons/react/24/outline';
 import { formatDate } from '../utils/helpers';
 
@@ -8,8 +8,8 @@ interface CommentsProps {
 }
 
 const Comments: React.FC<CommentsProps> = ({ characterId }) => {
-  const { comments, addComment, removeComment } = useComments(characterId);
-  const [newComment, setNewComment] = useState('');
+  const { getCommentsForCharacter, addComment, removeComment, newComment, setNewComment } = useStore();
+  const comments = getCommentsForCharacter(characterId);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

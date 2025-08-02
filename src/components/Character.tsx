@@ -3,20 +3,23 @@ import React from "react";
 import { ICharacter } from "../types/character";
 import { HeartIcon } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
+import { useStore } from "../store/useStore";
 
 
 const Character: React.FC<{
   character: ICharacter,
-  handleCharacterClick: (character: any) => void,
-  toggleFavorite: (character: any) => void,
   isFavorite?: boolean,
-  selectedCharacter: ICharacter | null
 }> = ({
   character,
-  handleCharacterClick,
-  toggleFavorite,
   isFavorite = false,
-  selectedCharacter }) => (
+}) => {
+  const { toggleFavorite, setSelectedCharacter, selectedCharacter } = useStore();
+  
+  const handleCharacterClick = (character: ICharacter) => {
+    setSelectedCharacter(character);
+  };
+  
+  return (
     <div
       key={character.id}
       className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors duration-200 ${selectedCharacter?.id === character.id
@@ -48,6 +51,7 @@ const Character: React.FC<{
         )}
       </button>
     </div>
-  )
+  );
+};
 
 export default Character;

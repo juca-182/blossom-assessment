@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { MagnifyingGlassIcon, FunnelIcon } from '@heroicons/react/24/outline';
 import type { FilterOptions } from '../types/character';
+import { useStore } from '../store/useStore';
 
 interface SearchAndFilterProps {
   onFilterChange: (filters: FilterOptions) => void;
@@ -13,11 +14,17 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
   onSortChange,
   totalResults,
 }) => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [showFilters, setShowFilters] = useState(false);
-  const [filters, setFilters] = useState<FilterOptions>({});
-  const [sortBy, setSortBy] = useState('name');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const { 
+    searchTerm, 
+    setSearchTerm, 
+    showFilters, 
+    setShowFilters, 
+    filters, 
+    setFilters, 
+    sortBy, 
+    sortOrder, 
+    setSort 
+  } = useStore();
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -40,8 +47,7 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
       newSortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
     }
     
-    setSortBy(newSortBy);
-    setSortOrder(newSortOrder);
+    setSort(newSortBy, newSortOrder);
     onSortChange(newSortBy, newSortOrder);
   };
 
