@@ -1,19 +1,20 @@
 import React from "react";
 import { createBrowserRouter } from "react-router-dom";
 import CharacterList from "./pages/CharacterList";
-import CharacterSelectedDesktop from "./components/CharacterSelectedDesktop";
-import CharacterDetail from "./pages/CharacterDetail";
+import CharacterSelected from "./pages/CharacterSelected";
 
 
 
     const routes = createBrowserRouter([
         {
-            path: "/",
-            element: <CharacterList />
-        },
-        {
-            path: "/:id",
-            element: <CharacterDetail />
+            path: "*",
+            Component: CharacterList,
+            children: [
+                {
+                    path: ":id",
+                    Component: CharacterSelected
+                }
+            ]
         }
     ])
 
