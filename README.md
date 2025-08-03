@@ -304,27 +304,3 @@ No environment variables are required for this application as it uses the public
    npm install
    npm test
    ```
-
-## 📄 License
-
-This project is for educational purposes and uses the Rick and Morty API which is publicly available.
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests for new functionality
-5. Run the test suite
-6. Submit a pull request
-
-## 📞 Support
-
-For issues or questions:
-1. Check the troubleshooting section above
-2. Review the API documentation at [rickandmortyapi.com](https://rickandmortyapi.com/)
-3. Open an issue in the repository
-
----
-
-**Enjoy exploring the Rick and Morty universe! 🚀**
