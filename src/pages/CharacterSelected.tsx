@@ -37,8 +37,9 @@ const CharacterSelected: React.FC = () => {
       </div>
     );
   }
-
   if (!data?.character) {
+  console.log('entro');
+
     return (
       <div className="flex-1 p-8 flex items-center justify-center">
         <div className="text-center">
@@ -66,8 +67,8 @@ const CharacterSelected: React.FC = () => {
 
       <div className="max-w-2xl">
         {/* Character Header */}
-        <div className="flex items-start gap-6 mb-8">
-          <div className="relative">
+        <div className="flex flex-col items-start mb-8">
+          <div className="relative mb-4">
             <img
               src={character.image}
               alt={character.name}
@@ -85,8 +86,8 @@ const CharacterSelected: React.FC = () => {
             </button>
           </div>
 
-          <div className="flex-1">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-6">
               {character.name}
             </h1>
           </div>
@@ -95,27 +96,29 @@ const CharacterSelected: React.FC = () => {
         {/* Character Details */}
         <div className="space-y-4 mb-8">
           <div className="border-b border-gray-200 pb-3">
-            <span className="text-sm font-medium text-gray-700">Specie:</span>
-            <span className="ml-2 text-gray-900">{character.species}</span>
+            <div className="text-sm font-medium text-gray-700 mb-1">Specie:</div>
+            <div className="text-gray-900">{character.species}</div>
           </div>
 
           <div className="border-b border-gray-200 pb-3">
-            <span className="text-sm font-medium text-gray-700">Status:</span>
-            <span
-              className={`ml-2 px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                character.status
-              )}`}
-            >
-              {character.status}
-            </span>
+            <div className="text-sm font-medium text-gray-700 mb-1">Status:</div>
+            <div>
+              <span
+                className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                  character.status
+                )}`}
+              >
+                {character.status}
+              </span>
+            </div>
           </div>
 
           {character.type && (
             <div className="border-b border-gray-200 pb-3">
-              <span className="text-sm font-medium text-gray-700">
+              <div className="text-sm font-medium text-gray-700 mb-1">
                 Occupation:
-              </span>
-              <span className="ml-2 text-gray-900">{character.type}</span>
+              </div>
+              <div className="text-gray-900">{character.type}</div>
             </div>
           )}
         </div>

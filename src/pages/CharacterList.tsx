@@ -2,7 +2,7 @@ import React from "react";
 import { useQuery } from "@apollo/client";
 import { GET_CHARACTERS } from "../services/queries";
 import SearchAndFilter from "../components/SearchAndFilter";
-import { ICharacter } from "../types/character";
+import { FilterOptions, ICharacter } from "../types/character";
 import Character from "../components/Character";
 import { useStore } from "../store/useStore";
 import { filterCharacters, sortCharacters } from "../utils/helpers";
@@ -54,14 +54,14 @@ const CharacterList: React.FC = () => {
   );
 
   // Separate starred and regular characters
-  const starredCharacters = sortedCharacters.filter((char) =>
+  const starredCharacters = filters.character === 'others' ?  [] : sortedCharacters.filter((char) =>
     isFavorite(char.id)
   );
-  const regularCharacters = sortedCharacters.filter(
+  const regularCharacters = filters.character === 'starred' ?  [] : sortedCharacters.filter(
     (char) => !isFavorite(char.id)
   );
 
-  const handleFilterChange = (newFilters: any) => {
+  const handleFilterChange = (newFilters: FilterOptions) => {
     setFilters(newFilters);
     setCurrentPage(1);
   };
@@ -73,13 +73,47 @@ const CharacterList: React.FC = () => {
     setSort(newSortBy, newSortOrder);
   };
 
+  const handleLoadMore = () => {
+    setCurrentPage(currentPage + 1);
+  };
+
   const Header = () => (
-    <div className="mb-6">
-      <h1 className="text-2xl font-bold text-gray-900 mb-2">
+    <div className="mb-6 pt-[1.625rem]">
+      <h1 className="text-2xl font-bold text-gray-900 mb-5">
         Rick and Morty list
       </h1>
     </div>
   );
+
+  const LoadMoreButton = () => {
+    const hasNextPage = data?.characters?.info?.next;
+    const isLoadingMore = loading && currentPage > 1;
+
+    if (!hasNextPage) return null;
+
+    return (
+      <div className="flex justify-center mt-6">
+        <button
+          onClick={handleLoadMore}
+          disabled={isLoadingMore}
+          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 ${
+            isLoadingMore
+              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+              : "bg-blue-600 text-white hover:bg-blue-700"
+          }`}
+        >
+          {isLoadingMore ? (
+            <div className="flex items-center space-x-2">
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+              <span>Loading...</span>
+            </div>
+          ) : (
+            "Load More Characters"
+          )}
+        </button>
+      </div>
+    );
+  };
 
   const List = ({
     title,
@@ -122,7 +156,7 @@ const CharacterList: React.FC = () => {
       <div className="hidden lg:block">
         <div className="hidden lg:flex">
           {/* Left Sidebar */}
-          <div className="w-80 bg-white border-r border-gray-200 min-h-screen p-6">
+          <div className="lg:w-[23.4375rem] bg-white border-r border-gray-200 min-h-screen px-4">
             {/* Header */}
             <Header />
             <SearchAndFilter
@@ -152,6 +186,9 @@ const CharacterList: React.FC = () => {
 
             {/* Loading State */}
             <Loader loading={loading} />
+            
+            {/* Load More Button */}
+            <LoadMoreButton />
           </div>
 
           <div className="flex-1 p-8">
@@ -176,7 +213,7 @@ const CharacterList: React.FC = () => {
             />
 
             {/* Character Lists */}
-            <div className="space-y-6">
+            <div className="space-y-6 px-4">
               {/* Starred Characters Section */}
               {starredCharacters.length > 0 && (
                 <div>
@@ -196,6 +233,9 @@ const CharacterList: React.FC = () => {
 
             {/* Loading State */}
             <Loader loading={loading} />
+            
+            {/* Load More Button */}
+            <LoadMoreButton />
           </div>
         )}
       </div>

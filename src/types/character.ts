@@ -45,6 +45,7 @@ export interface Comment {
 export interface FilterOptions {
   name?: string;
   status?: string;
+  character?: string;
   species?: string;
   gender?: string;
   sortBy?: 'name' | 'status' | 'species';

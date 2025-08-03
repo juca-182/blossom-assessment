@@ -41,21 +41,21 @@ export const filterCharacters = (characters: ICharacter[], filters: FilterOption
     }
 
     // Filter by status
-    if (filters.status && character.status !== filters.status) {
-      return false;
-    }
+    // if (filters.status && character.status !== filters.status) {
+    //   return false;
+    // }
 
     // Filter by species
-    if (filters.species && character.species !== filters.species) {
+    if (filters.species && character.species.toLowerCase() !== filters.species) {
       return false;
     }
 
     // Filter by gender
-    if (filters.gender && character.gender !== filters.gender) {
-      return false;
-    }
+    // if (filters.gender && character.gender !== filters.gender) {
+    //   return false;
+    // }
 
-    return true;
+    return  true;
   });
 };
 

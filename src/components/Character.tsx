@@ -47,7 +47,7 @@ const Character: React.FC<{
             {isFavorite ? (
               <HeartSolidIcon className={`w-5 h-5  text-(--color-secondary-600)`} />
             ) : (
-              <HeartIcon className={`w-5 h-5 text-(--color-gray) hover:text-(--color-secondary-600)`} />
+              <HeartIcon className={`w-5 h-5 text-(--color-gray-300) hover:text-(--color-secondary-600)`} />
             )}
           </button>
         </div>

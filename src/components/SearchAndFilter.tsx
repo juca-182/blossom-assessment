@@ -1,7 +1,9 @@
 import React from "react";
-import { MagnifyingGlassIcon, FunnelIcon } from "@heroicons/react/24/outline";
+import { MagnifyingGlassIcon, AdjustmentsVerticalIcon, ArrowsUpDownIcon } from "@heroicons/react/24/outline";
 import type { FilterOptions } from "../types/character";
 import { useStore } from "../store/useStore";
+import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
+import FilterPopover from "./FilterPopover";
 
 interface SearchAndFilterProps {
   onFilterChange: (filters: FilterOptions) => void;
@@ -40,15 +42,10 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
     onFilterChange(newFilters);
   };
 
-  const handleSortChange = (newSortBy: string) => {
-    let newSortOrder: "asc" | "desc" = "asc";
-
-    if (newSortBy === sortBy) {
-      newSortOrder = sortOrder === "asc" ? "desc" : "asc";
-    }
-
-    setSort(newSortBy, newSortOrder);
-    onSortChange(newSortBy, newSortOrder);
+  const handleSortChange = () => {
+    const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
+    setSort("name", newSortOrder);
+    onSortChange("name", newSortOrder);
   };
 
   const clearFilters = () => {
@@ -68,21 +65,40 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
             placeholder="Search or filter results"
             value={searchTerm}
             onChange={handleSearchChange}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
+            className="w-full h-[3.25rem] bg-(--color-gray-100) pl-10 pr-4 py-2 rounded-lg text-sm outline-none"
           />
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600"
-          >
-            <FunnelIcon className="w-4 h-4" />
-          </button>
+
+          {/* Filter Popover Button */}
+          <Popover className="absolute right-3 top-1/2 transform -translate-y-1/2 z-3">
+            <PopoverButton className="p-1 text-gray-400 hover:text-(--color-primary-600) hover:bg-(--color-primary-600)/5 rounded-lg  transition-colors duration-200">
+              <AdjustmentsVerticalIcon className="w-6 h-6" />
+            </PopoverButton>
+
+            <PopoverPanel className="absolute right-0 mt-4 -mr-[0.74rem] w-[21.3rem] bg-white rounded-lg border border-gray-200 shadow-lg z-50">
+              <FilterPopover
+                onClose={() => setShowFilters(false)}
+                onFilterChange={onFilterChange}
+              />
+            </PopoverPanel>
+          </Popover>
         </div>
 
-        {/* Results Count */}
+        {/* Results Count and Sort */}
         <div className="flex items-center justify-between text-sm">
-          <span className="text-blue-600 font-medium">
-            {totalResults} Results
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="text-blue-600 font-medium">
+              {totalResults} Results
+            </span>
+            {/* Sort Button */}
+            <button
+              onClick={handleSortChange}
+              className="flex items-center gap-1 px-2 py-1 text-gray-600 hover:text-gray-800 transition-colors duration-200"
+            >
+              <span className="text-xs">Sort: Name {sortOrder === "asc" ? "↑" : "↓"}</span>
+            </button>
+          </div>
+          
+          {/* Filter Counter */}
           {Object.keys(filters).some(
             (key) => filters[key as keyof FilterOptions]
           ) && (
@@ -96,102 +112,6 @@ const SearchAndFilter: React.FC<SearchAndFilterProps> = ({
             </span>
           )}
         </div>
-
-        {/* Filter Panel */}
-        {showFilters && (
-          <div className="bg-white p-4 rounded-lg border border-gray-200 space-y-4 shadow-lg">
-            {/* Character Filter */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Character
-              </label>
-              <div className="flex flex-wrap gap-2">
-                {["All", "Starred", "Others"].map((option) => (
-                  <button
-                    key={option}
-                    onClick={() =>
-                      handleFilterChange(
-                        "status",
-                        option === "All" ? "" : option
-                      )
-                    }
-                    className={`px-3 py-1 text-sm rounded-full transition-colors duration-200 ${
-                      filters.status === option ||
-                      (option === "All" && !filters.status)
-                        ? "bg-purple-100 text-purple-700 border border-purple-300"
-                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                    }`}
-                  >
-                    {option}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Species Filter */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Specie
-              </label>
-              <div className="flex flex-wrap gap-2">
-                {["All", "Human", "Alien"].map((option) => (
-                  <button
-                    key={option}
-                    onClick={() =>
-                      handleFilterChange(
-                        "species",
-                        option === "All" ? "" : option
-                      )
-                    }
-                    className={`px-3 py-1 text-sm rounded-full transition-colors duration-200 ${
-                      filters.species === option ||
-                      (option === "All" && !filters.species)
-                        ? "bg-purple-100 text-purple-700 border border-purple-300"
-                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                    }`}
-                  >
-                    {option}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Sort Options */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Sort By
-              </label>
-              <div className="flex flex-wrap gap-2">
-                {["name", "status", "species"].map((option) => (
-                  <button
-                    key={option}
-                    onClick={() => handleSortChange(option)}
-                    className={`px-3 py-1 text-sm rounded-full transition-colors duration-200 ${
-                      sortBy === option
-                        ? "bg-purple-100 text-purple-700 border border-purple-300"
-                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                    }`}
-                  >
-                    {option.charAt(0).toUpperCase() + option.slice(1)}
-                    {sortBy === option && (
-                      <span className="ml-1">
-                        {sortOrder === "asc" ? "↑" : "↓"}
-                      </span>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Apply Filter Button */}
-            <button
-              onClick={() => setShowFilters(false)}
-              className="w-full px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors duration-200 text-sm font-medium"
-            >
-              Filter
-            </button>
-          </div>
-        )}
       </div>
     </div>
   );
