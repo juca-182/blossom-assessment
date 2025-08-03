@@ -1,20 +1,18 @@
 import { useState, useEffect } from 'react';
-import type { Comment } from '../types/character';
+import type { IComment } from '../types/character';
 
 const COMMENTS_KEY = 'rick-and-morty-comments';
 
 export const useComments = (characterId?: string) => {
-  const [comments, setComments] = useState<Comment[]>([]);
+  const [comments, setComments] = useState<IComment[]>([]);
 
-  // Load comments from localStorage on component mount
   useEffect(() => {
     const storedComments = localStorage.getItem(COMMENTS_KEY);
     if (storedComments) {
       try {
         const allComments = JSON.parse(storedComments);
         if (characterId) {
-          // Filter comments for specific character
-          setComments(allComments.filter((comment: Comment) => comment.characterId === characterId));
+          setComments(allComments.filter((comment: IComment) => comment.characterId === characterId));
         } else {
           setComments(allComments);
         }
@@ -25,10 +23,9 @@ export const useComments = (characterId?: string) => {
     }
   }, [characterId]);
 
-  // Save comments to localStorage whenever comments change
   useEffect(() => {
     const storedComments = localStorage.getItem(COMMENTS_KEY);
-    let allComments: Comment[] = [];
+    let allComments: IComment[] = [];
     
     if (storedComments) {
       try {
@@ -39,8 +36,7 @@ export const useComments = (characterId?: string) => {
       }
     }
 
-    if (characterId) {
-      // Update comments for specific character
+    if (characterId) {  
       const otherComments = allComments.filter(comment => comment.characterId !== characterId);
       const updatedComments = [...otherComments, ...comments];
       localStorage.setItem(COMMENTS_KEY, JSON.stringify(updatedComments));
@@ -50,13 +46,13 @@ export const useComments = (characterId?: string) => {
   }, [comments, characterId]);
 
   const addComment = (text: string, characterId: string) => {
-    const newComment: Comment = {
+    const newComment: IComment = {
       id: Date.now().toString(),
       characterId,
       text,
       createdAt: new Date().toISOString(),
     };
-    setComments(prev => [...prev, newComment]);
+    setComments(prev => [...prev, newComment] as IComment[]);
   };
 
   const removeComment = (commentId: string) => {

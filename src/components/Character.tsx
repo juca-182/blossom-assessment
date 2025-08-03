@@ -6,7 +6,6 @@ import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
 import { useStore } from "../store/useStore";
 import { NavLink, useParams } from "react-router-dom";
 
-
 const Character: React.FC<{
   character: ICharacter,
   isFavorite?: boolean,
@@ -16,7 +15,6 @@ const Character: React.FC<{
 }) => {
     const { toggleFavorite } = useStore();
     const { id } = useParams<{ id: string }>();
-
 
     return (
       <NavLink to={`/${character.id}`}>

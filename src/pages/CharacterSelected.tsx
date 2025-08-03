@@ -67,7 +67,7 @@ const CharacterSelected: React.FC = () => {
 
       <div className="max-w-2xl">
         {/* Character Header */}
-        <div className="flex flex-col items-start mb-8">
+        <div className="flex flex-col items-start mb-4">
           <div className="relative mb-4">
             <img
               src={character.image}
@@ -87,7 +87,7 @@ const CharacterSelected: React.FC = () => {
           </div>
 
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-6">
+            <h1 className="text-[1.5rem] font-bold text-gray-900 mb-6">
               {character.name}
             </h1>
           </div>
@@ -96,29 +96,21 @@ const CharacterSelected: React.FC = () => {
         {/* Character Details */}
         <div className="space-y-4 mb-8">
           <div className="border-b border-gray-200 pb-3">
-            <div className="text-sm font-medium text-gray-700 mb-1">Specie:</div>
-            <div className="text-gray-900">{character.species}</div>
+            <div className="text-[1rem] font-medium text-gray-700 mb-1">Specie:</div>
+            <div className="text-[1rem] text-(--color-gray-500)">{character.species}</div>
           </div>
 
           <div className="border-b border-gray-200 pb-3">
-            <div className="text-sm font-medium text-gray-700 mb-1">Status:</div>
-            <div>
-              <span
-                className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                  character.status
-                )}`}
-              >
-                {character.status}
-              </span>
-            </div>
+            <div className="text-[1rem] font-medium text-gray-700 mb-1">Status:</div>
+            <div className="text-[1rem] text-(--color-gray-500)">{character.status}</div>
           </div>
 
           {character.type && (
             <div className="border-b border-gray-200 pb-3">
-              <div className="text-sm font-medium text-gray-700 mb-1">
+              <div className="text-[1rem] font-medium text-gray-700 mb-1">
                 Occupation:
               </div>
-              <div className="text-gray-900">{character.type}</div>
+              <div className="text-[1rem] text-(--color-gray-500)">{character.type}</div>
             </div>
           )}
         </div>

@@ -2,12 +2,11 @@ import React from 'react';
 import { useStore } from '../store/useStore';
 import { TrashIcon } from '@heroicons/react/24/outline';
 import { formatDate } from '../utils/helpers';
+import { ICommentsProps } from '../types/character';
 
-interface CommentsProps {
-  characterId: string;
-}
 
-const Comments: React.FC<CommentsProps> = ({ characterId }) => {
+
+const Comments: React.FC<ICommentsProps> = ({ characterId }) => {
   const { getCommentsForCharacter, addComment, removeComment, newComment, setNewComment } = useStore();
   const comments = getCommentsForCharacter(characterId);
 
@@ -27,13 +26,12 @@ const Comments: React.FC<CommentsProps> = ({ characterId }) => {
     <div className="space-y-4">
       <h3 className="text-lg font-semibold text-gray-900">Comments</h3>
       
-      {/* Add Comment Form */}
       <form onSubmit={handleSubmit} className="space-y-2">
         <textarea
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
           placeholder="Add a comment..."
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg  resize-none"
           rows={3}
         />
         <button
@@ -45,7 +43,6 @@ const Comments: React.FC<CommentsProps> = ({ characterId }) => {
         </button>
       </form>
 
-      {/* Comments List */}
       <div className="space-y-3">
         {comments.length === 0 ? (
           <p className="text-gray-500 text-center py-4">No comments yet. Be the first to comment!</p>

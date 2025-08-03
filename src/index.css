@@ -8,4 +8,10 @@
 
   --color-gray-100: #F3F4F6;
   --color-gray-300: #D1D5DB;
+  --color-gray-500: #6B7280;
+}
+
+.scroll-side-bar {
+  max-height: calc(100% - 81rem);
+  overflow-y: scroll;
 }

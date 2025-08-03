@@ -2,11 +2,13 @@ import React from "react";
 import { useQuery } from "@apollo/client";
 import { GET_CHARACTERS } from "../services/queries";
 import SearchAndFilter from "../components/SearchAndFilter";
-import { FilterOptions, ICharacter } from "../types/character";
+import { IFilterOptions, ICharacter } from "../types/character";
 import Character from "../components/Character";
 import { useStore } from "../store/useStore";
 import { filterCharacters, sortCharacters } from "../utils/helpers";
 import { Outlet, useParams } from "react-router-dom";
+import LoadMoreButton from "../components/LoadMoreButton";
+import CharacterListHeader from "../components/CharacterListHeader";
 
 const CharacterList: React.FC = () => {
   const { id: currentCharacterId } = useParams();
@@ -17,12 +19,11 @@ const CharacterList: React.FC = () => {
     setFilters,
     sortBy,
     sortOrder,
-    setSort,
+    setSort,  
     currentPage,
     setCurrentPage,
   } = useStore();
 
-  // GraphQL query for characters
   const { loading, data } = useQuery(GET_CHARACTERS, {
     variables: {
       page: currentPage,
@@ -36,7 +37,6 @@ const CharacterList: React.FC = () => {
     notifyOnNetworkStatusChange: true,
   });
 
-  // Combine API characters with favorites
   const allCharacters = data?.characters?.results || [];
   const combinedCharacters = [
     ...allCharacters,
@@ -45,7 +45,6 @@ const CharacterList: React.FC = () => {
     ),
   ];
 
-  // Apply client-side filtering and sorting
   const filteredCharacters = filterCharacters(combinedCharacters, filters);
   const sortedCharacters = sortCharacters(
     filteredCharacters,
@@ -53,15 +52,16 @@ const CharacterList: React.FC = () => {
     sortOrder
   );
 
-  // Separate starred and regular characters
-  const starredCharacters = filters.character === 'others' ?  [] : sortedCharacters.filter((char) =>
-    isFavorite(char.id)
-  );
-  const regularCharacters = filters.character === 'starred' ?  [] : sortedCharacters.filter(
-    (char) => !isFavorite(char.id)
-  );
+  const starredCharacters =
+    filters.character === "others"
+      ? []
+      : sortedCharacters.filter((char) => isFavorite(char.id));
+  const regularCharacters =
+    filters.character === "starred"
+      ? []
+      : sortedCharacters.filter((char) => !isFavorite(char.id));
 
-  const handleFilterChange = (newFilters: FilterOptions) => {
+  const handleFilterChange = (newFilters: IFilterOptions) => {
     setFilters(newFilters);
     setCurrentPage(1);
   };
@@ -75,44 +75,6 @@ const CharacterList: React.FC = () => {
 
   const handleLoadMore = () => {
     setCurrentPage(currentPage + 1);
-  };
-
-  const Header = () => (
-    <div className="mb-6 pt-[1.625rem]">
-      <h1 className="text-2xl font-bold text-gray-900 mb-5">
-        Rick and Morty list
-      </h1>
-    </div>
-  );
-
-  const LoadMoreButton = () => {
-    const hasNextPage = data?.characters?.info?.next;
-    const isLoadingMore = loading && currentPage > 1;
-
-    if (!hasNextPage) return null;
-
-    return (
-      <div className="flex justify-center mt-6">
-        <button
-          onClick={handleLoadMore}
-          disabled={isLoadingMore}
-          className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 ${
-            isLoadingMore
-              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-              : "bg-blue-600 text-white hover:bg-blue-700"
-          }`}
-        >
-          {isLoadingMore ? (
-            <div className="flex items-center space-x-2">
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-              <span>Loading...</span>
-            </div>
-          ) : (
-            "Load More Characters"
-          )}
-        </button>
-      </div>
-    );
   };
 
   const List = ({
@@ -152,22 +114,17 @@ const CharacterList: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Desktop Layout */}
       <div className="hidden lg:block">
         <div className="hidden lg:flex">
-          {/* Left Sidebar */}
           <div className="lg:w-[23.4375rem] bg-white border-r border-gray-200 min-h-screen px-4">
-            {/* Header */}
-            <Header />
+            <CharacterListHeader />
             <SearchAndFilter
               onFilterChange={handleFilterChange}
               onSortChange={handleSortChange}
               totalResults={sortedCharacters.length}
             />
 
-            {/* Character Lists */}
-            <div className="space-y-6">
-              {/* Starred Characters Section */}
+            <div className="space-y-6 scroll-side-bar" >
               {starredCharacters.length > 0 && (
                 <div>
                   <List
@@ -178,17 +135,19 @@ const CharacterList: React.FC = () => {
                 </div>
               )}
 
-              {/* Regular Characters Section */}
               <div>
                 <List title="Characters" characters={regularCharacters} />
               </div>
             </div>
 
-            {/* Loading State */}
             <Loader loading={loading} />
-            
-            {/* Load More Button */}
-            <LoadMoreButton />
+
+            <LoadMoreButton
+              loading={loading}
+              currentPage={currentPage}
+              handleLoadMore={handleLoadMore}
+              data={data}
+            />
           </div>
 
           <div className="flex-1 p-8">
@@ -197,24 +156,20 @@ const CharacterList: React.FC = () => {
         </div>
       </div>
 
-      {/* Mobile Layout */}
       <div className="block lg:hidden">
-        {/* -> // Mobile List View */}
         {currentCharacterId ? (
           <Outlet />
         ) : (
           <div className="p-4">
-            {/* Header */}
-            <Header />
+            <CharacterListHeader />
             <SearchAndFilter
               onFilterChange={handleFilterChange}
               onSortChange={handleSortChange}
               totalResults={sortedCharacters.length}
+              isMobile
             />
 
-            {/* Character Lists */}
             <div className="space-y-6 px-4">
-              {/* Starred Characters Section */}
               {starredCharacters.length > 0 && (
                 <div>
                   <List
@@ -225,17 +180,19 @@ const CharacterList: React.FC = () => {
                 </div>
               )}
 
-              {/* Regular Characters Section */}
               <div>
                 <List title="Characters" characters={regularCharacters} />
               </div>
             </div>
 
-            {/* Loading State */}
             <Loader loading={loading} />
-            
-            {/* Load More Button */}
-            <LoadMoreButton />
+
+            <LoadMoreButton
+              loading={loading}
+              currentPage={currentPage}
+              handleLoadMore={handleLoadMore}
+              data={data}
+            />
           </div>
         )}
       </div>

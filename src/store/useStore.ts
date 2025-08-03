@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { ICharacter, Comment, FilterOptions } from '../types/character';
+import type { ICharacter, IComment, IFilterOptions } from '../types/character';
 
 interface AppState {
   // Favorites state
@@ -11,18 +11,18 @@ interface AppState {
   isFavorite: (characterId: string) => boolean;
 
   // Comments state
-  comments: Comment[];
+  comments: IComment[];
   addComment: (text: string, characterId: string) => void;
   removeComment: (commentId: string) => void;
-  getCommentsForCharacter: (characterId: string) => Comment[];
+  getCommentsForCharacter: (characterId: string) => IComment[];
 
   // UI state
   selectedCharacter: ICharacter | null;
   setSelectedCharacter: (character: ICharacter | null) => void;
   
   // Filter state
-  filters: FilterOptions;
-  setFilters: (filters: FilterOptions) => void;
+  filters: IFilterOptions;
+  setFilters: (filters: IFilterOptions) => void;
   
   // Sort state
   sortBy: string;
@@ -78,7 +78,7 @@ export const useStore = create<AppState>()(
       // Comments state
       comments: [],
       addComment: (text: string, characterId: string) => {
-        const newComment: Comment = {
+        const newComment: IComment = {
           id: Date.now().toString(),
           characterId,
           text,
@@ -105,7 +105,7 @@ export const useStore = create<AppState>()(
 
       // Filter state
       filters: {},
-      setFilters: (filters: FilterOptions) => {
+      setFilters: (filters: IFilterOptions) => {
         set({ filters });
       },
 
